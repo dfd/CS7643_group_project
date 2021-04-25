@@ -1,0 +1,4 @@
+wandb
+*.pickle
+*.sw*
+notebooks/.ipynb_checkpoints

@@ -1,0 +1,24 @@
+name: cs7643-mine
+channels:
+  - pytorch
+  - conda-forge
+  - huggingface
+  - defaults
+dependencies:
+  - python=3.7
+  - pytorch=1.8.1
+  - torchtext
+  - wandb
+  - transformers
+  - matplotlib
+  - pyyaml
+  - numpy
+  - future
+  - scipy
+  - jupyter
+  - pandas
+  - spacy 
+  - datasets
+    #  - pip
+    #- pip:
+    #  - transformeres
