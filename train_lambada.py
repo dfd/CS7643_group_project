@@ -31,16 +31,21 @@ def run_model_on_dataset(
     label_ids = []
     batches_since_yield = 0
     criterion = nn.CrossEntropyLoss()
+    torch.cuda.empty_cache()
 
     for i, batch in enumerate(dataloader):
         device = torch.device(config.device)
         batch = tuple(t.to(device) for t in batch)
-        input_ids, output_ids, input_ids_padding_mask, output_ids_padding_mask = batch
+        (input_ids, ) = batch
+        mask = model.transformer.generate_square_subsequent_mask(202)
+        src_mask = torch.where(input_ids[:, :-1] == 0, torch.Tensor([-np.inf]*mask.shape[0]*mask.shape[1], dtype=mask.dtype).reshape(mask.shape[0], mask.shape[1]))
+        tgt_mask = torch.where(input_ids[:, 1:] == 0, torch.Tensor([-np.inf]*mask.shape[0]*mask.shape[1], dtype=mask.dtype).reshape(mask.shape[0], mask.shape[1]))
         batch_logits = model(
-            source_ids=input_ids,
-            target_ids=output_ids[:, :-1],
-            source_padding_mask=input_ids_padding_mask,
-            target_padding_mask=output_ids_padding_mask[:, :-1],
+            source_ids=input_ids[:, :-1],
+            target_ids=input_ids[:, 1:],
+            source_padding_mask=mask,
+            target_padding_mask=mask,
+            memory_key_padding_mask=mask
         )
         loss = criterion(
             batch_logits.view(-1, batch_logits.size(-1)), output_ids[:, 1:].reshape(-1)
@@ -221,7 +226,7 @@ def train(config, run):
 
     #embedding_matrix = vectors.get_vectors(config, tokenizer)
 
-    model = models.get_model(config, embedding_matrix=None, vocab=data.vocab, embedding_size=512) #embedding_matrix)
+    model = models.get_model(config, embedding_matrix=None, vocab=data.vocab, embedding_size=256) #embedding_matrix)
 
     if config.log is not None:
         wandb.watch(model, log=config.log)

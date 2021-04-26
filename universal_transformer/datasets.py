@@ -76,9 +76,9 @@ class LambadaDataset:
         test = data['test']
         test.remove_columns_(['domain'])
 
-        self.train = texts_to_tensors_lambada(train, self.vocab)
-        self.val = texts_to_tensors_lambada(val, self.vocab)
-        self.test = texts_to_tensors_lambada(test, self.vocab)
+        self.train = (texts_to_tensors_lambada(train, self.vocab, True), )
+        self.val = (texts_to_tensors_lambada(val, self.vocab, False), )
+        self.test = (texts_to_tensors_lambada(test, self.vocab, False), )
         
         print('data loaded')
 
@@ -88,6 +88,7 @@ def texts_to_tensors(texts, tokenizer):
     """Convert a sequence of texts and labels to a dataset."""
     token_ids_seqs = tokenizer.encode_texts(texts)
     seq_length_max = len(token_ids_seqs[0])
+
     pad_token_id = tokenizer.token_to_id[tokenizer.pad_token]
     lengths = [
         ids.index(pad_token_id) if ids[-1] == pad_token_id else len(ids)
@@ -101,15 +102,31 @@ def texts_to_tensors(texts, tokenizer):
     return token_ids_seqs, att_masks
 
 
-def texts_to_tensors_lambada(texts, vocab):
+def texts_to_tensors_lambada(texts, vocab, split=False):
 
     vec = []
 
-    for instance in texts:
-        tensor = torch.tensor([vocab[token] for token in instance['text'].split()])
-        vec.append(tensor)
+    if not split:
+        for instance in texts:
+            tensor = torch.tensor([vocab[token] for token in instance['text'].split()])
+            tensor = torch.cat([tensor, torch.zeros(203 - len(tensor))])
+            #print(tensor.shape)
+            vec.append(tensor.unsqueeze(0))
 
-    return vec
+    else:
+        for instance in texts:
+            words = instance['text'].split()
+            start = 0
+            for i in range(203, len(words), 203):
+                tensor = torch.tensor([vocab[token] for token in words[start:i]])
+                tensor = torch.cat([tensor, torch.zeros(203 - len(tensor))])
+                #print(tensor.shape)
+                vec.append(tensor.unsqueeze(0))
+                start = i
+
+    vec2D = torch.cat(vec, axis=0)
+    print(vec2D.shape)
+    return vec2D 
 
 def get_dataset(config, tokenizer=None):
     key = ("dataset", config.dataset)
