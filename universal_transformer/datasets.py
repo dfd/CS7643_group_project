@@ -67,6 +67,11 @@ class LambadaDataset:
             wordCounts = Counter({line[0]: int(line[1]) for line in lines})
 
         self.vocab = Vocab(wordCounts)
+        print(0, self.vocab.itos[0])
+        print(1, self.vocab.itos[1])
+        print('unk', texts_to_tensors_lambada('<unk>', self.vocab))
+        print('pad', texts_to_tensors_lambada('<pad>', self.vocab))
+        assert False
 
         data = load_dataset('lambada') 
         train = data['train']
@@ -109,7 +114,7 @@ def texts_to_tensors_lambada(texts, vocab, split=False):
     if not split:
         for instance in texts:
             tensor = torch.tensor([vocab[token] for token in instance['text'].split()])
-            tensor = torch.cat([tensor, torch.zeros(203 - len(tensor))])
+            tensor = torch.cat([tensor, torch.ones(203 - len(tensor))])
             #print(tensor.shape)
             vec.append(tensor.unsqueeze(0))
 
@@ -119,7 +124,7 @@ def texts_to_tensors_lambada(texts, vocab, split=False):
             start = 0
             for i in range(203, len(words), 203):
                 tensor = torch.tensor([vocab[token] for token in words[start:i]])
-                tensor = torch.cat([tensor, torch.zeros(203 - len(tensor))])
+                tensor = torch.cat([tensor, torch.ones(203 - len(tensor))]) # add padding
                 #print(tensor.shape)
                 vec.append(tensor.unsqueeze(0))
                 start = i

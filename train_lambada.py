@@ -38,8 +38,6 @@ def run_model_on_dataset(
         batch = tuple(t.to(device) for t in batch)
         (input_ids, ) = batch
         mask = model.transformer.generate_square_subsequent_mask(202)
-        src_mask = torch.where(input_ids[:, :-1] == 0, torch.Tensor([-np.inf]*mask.shape[0]*mask.shape[1], dtype=mask.dtype).reshape(mask.shape[0], mask.shape[1]))
-        tgt_mask = torch.where(input_ids[:, 1:] == 0, torch.Tensor([-np.inf]*mask.shape[0]*mask.shape[1], dtype=mask.dtype).reshape(mask.shape[0], mask.shape[1]))
         batch_logits = model(
             source_ids=input_ids[:, :-1],
             target_ids=input_ids[:, 1:],
