@@ -46,7 +46,7 @@ def run_model_on_dataset(
             memory_mask=mask
         )
         loss = criterion(
-            batch_logits.view(-1, batch_logits.size(-1)), output_ids[:, 1:].reshape(-1)
+            batch_logits.view(-1, batch_logits.size(-1)), input_ids[:, 1:].reshape(-1)
         )
 
         total_loss += loss.item() * len(batch[0])  # Convert from mean to sum.
