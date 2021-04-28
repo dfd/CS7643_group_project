@@ -43,7 +43,7 @@ def run_model_on_dataset(
             target_ids=input_ids[:, 1:],
             source_padding_mask=mask,
             target_padding_mask=mask,
-            memory_key_padding_mask=mask
+            memory_mask=mask
         )
         loss = criterion(
             batch_logits.view(-1, batch_logits.size(-1)), output_ids[:, 1:].reshape(-1)
