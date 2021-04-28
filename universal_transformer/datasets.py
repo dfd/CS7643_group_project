@@ -67,11 +67,6 @@ class LambadaDataset:
             wordCounts = Counter({line[0]: int(line[1]) for line in lines})
 
         self.vocab = Vocab(wordCounts)
-        print(0, self.vocab.itos[0])
-        print(1, self.vocab.itos[1])
-        print('unk', texts_to_tensors_lambada('<unk>', self.vocab))
-        print('pad', texts_to_tensors_lambada('<pad>', self.vocab))
-        assert False
 
         data = load_dataset('lambada') 
         train = data['train']
