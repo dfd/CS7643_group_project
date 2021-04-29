@@ -61,7 +61,7 @@ def run_model_on_dataset(
         batch_logits = batch_logits.detach().cpu().numpy()
         logits.append(batch_logits)
         preds.extend(np.argmax(batch_logits, axis=1))
-        label_ids.extend(batch[2].detach().cpu().numpy())
+        label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
 
         if (
