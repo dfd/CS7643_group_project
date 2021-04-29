@@ -57,9 +57,9 @@ class TransformerModelBase(nn.Module):
         output = self.transformer(
             src=source_ids,
             tgt=target_ids,
-            src_mask=mask,
-            tgt_mask=mask,
-            memory_mask=mask,
+            src_mask=att_mask,
+            tgt_mask=att_mask,
+            memory_mask=att_mask,
             src_key_padding_mask=source_padding_mask,  # 1 means ignore.
             tgt_key_padding_mask=target_padding_mask,
             memory_key_padding_mask=source_padding_mask,
