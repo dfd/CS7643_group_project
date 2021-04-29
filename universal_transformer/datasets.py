@@ -110,7 +110,7 @@ def texts_to_tensors_lambada(texts, vocab, split=False):
 
     if not split:
         for instance in texts:
-            tensor = torch.tensor([vocab[token] for token in instance['text'].split()])
+            tensor = torch.tensor([vocab[token] for token in instance['text'].split()], dtype=torch.int64)
             length = len(tensor)
             tensor = torch.cat([tensor, torch.ones(max_length - length)])
             mask = [0] * length + [1] * (max_length - length)
@@ -123,7 +123,7 @@ def texts_to_tensors_lambada(texts, vocab, split=False):
             words = instance['text'].split()
             start = 0
             for i in range(max_length, len(words), max_length):
-                tensor = torch.tensor([vocab[token] for token in words[start:i]])
+                tensor = torch.tensor([vocab[token] for token in words[start:i]], dtype=torch.int64)
                 length = len(tensor)
                 tensor = torch.cat([tensor, torch.ones(max_length - length)]) # add padding
                 mask = [0] * length + [1] * (max_length - length)
