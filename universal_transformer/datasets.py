@@ -135,7 +135,7 @@ def texts_to_tensors_lambada(texts, vocab, split=False):
     masks = torch.tensor(masks, dtype=torch.bool)
     vec2D = torch.cat(vec, axis=0).type(torch.int64)
     print(vec2D.shape)
-    return vec2D, masks 
+    return TensorDataset(vec2D, masks)
 
 def get_dataset(config, tokenizer=None):
     key = ("dataset", config.dataset)
