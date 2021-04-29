@@ -133,7 +133,7 @@ def texts_to_tensors_lambada(texts, vocab, split=False):
                 start = i
 
     masks = torch.tensor(masks, dtype=torch.bool)
-    vec2D = torch.cat(vec, axis=0)
+    vec2D = torch.cat(vec, axis=0).type(torch.int64)
     print(vec2D.shape)
     return vec2D, masks 
 
