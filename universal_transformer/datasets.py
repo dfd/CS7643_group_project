@@ -99,7 +99,7 @@ def texts_to_tensors(texts, tokenizer):
     token_ids_seqs = torch.tensor(token_ids_seqs, dtype=torch.long)
     att_masks = torch.tensor(att_masks, dtype=torch.bool)
 
-    return token_ids_seqs, att_masks
+    return TensorDatase(token_ids_seqs, att_masks)
 
 
 def texts_to_tensors_lambada(texts, vocab, split=False):
