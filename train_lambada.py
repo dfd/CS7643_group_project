@@ -36,14 +36,12 @@ def run_model_on_dataset(
     for i, batch in enumerate(dataloader):
         device = torch.device(config.device)
         batch = tuple(t.to(device) for t in batch)
-        (input_ids, ) = batch
-        mask = model.transformer.generate_square_subsequent_mask(202)
+        (input_ids, masks) = batch
         batch_logits = model(
             source_ids=input_ids[:, :-1],
             target_ids=input_ids[:, 1:],
-            source_padding_mask=mask,
-            target_padding_mask=mask,
-            memory_mask=mask
+            source_padding_mask=masks,
+            target_padding_mask=masks,
         )
         loss = criterion(
             batch_logits.view(-1, batch_logits.size(-1)), input_ids[:, 1:].reshape(-1)

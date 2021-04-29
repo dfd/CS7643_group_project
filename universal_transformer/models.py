@@ -49,18 +49,20 @@ class TransformerModelBase(nn.Module):
         source_ids = source_ids.permute(1, 0, 2)
         target_ids = target_ids.permute(1, 0, 2)
 
-        decoder_att_mask = self.transformer.generate_square_subsequent_mask(
+        att_mask = self.transformer.generate_square_subsequent_mask(
             target_ids.size(0)
         )
-        decoder_att_mask = decoder_att_mask.to(source_ids.device)
+        att_mask = att_mask.to(source_ids.device)
 
         output = self.transformer(
             src=source_ids,
             tgt=target_ids,
-            tgt_mask=decoder_att_mask,
-            src_key_padding_mask=~source_padding_mask,  # It things 1 means ignore.
-            tgt_key_padding_mask=~target_padding_mask,
-            memory_key_padding_mask=~source_padding_mask,
+            src_mask=mask,
+            tgt_mask=mask,
+            memory_mask=mask,
+            src_key_padding_mask=source_padding_mask,  # 1 means ignore.
+            tgt_key_padding_mask=target_padding_mask,
+            memory_key_padding_mask=source_padding_mask,
         )
         output = output.permute(1, 0, 2)
         output = self.output_linear(output)

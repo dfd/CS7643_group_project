@@ -76,9 +76,9 @@ class LambadaDataset:
         test = data['test']
         test.remove_columns_(['domain'])
 
-        self.train = (texts_to_tensors_lambada(train, self.vocab, True), )
-        self.val = (texts_to_tensors_lambada(val, self.vocab, False), )
-        self.test = (texts_to_tensors_lambada(test, self.vocab, False), )
+        self.train = (texts_to_tensors_lambada(train, self.vocab, True))
+        self.val = (texts_to_tensors_lambada(val, self.vocab, False))
+        self.test = (texts_to_tensors_lambada(test, self.vocab, False))
         
         print('data loaded')
 
@@ -94,7 +94,7 @@ def texts_to_tensors(texts, tokenizer):
         ids.index(pad_token_id) if ids[-1] == pad_token_id else len(ids)
         for ids in token_ids_seqs
     ]
-    att_masks = [[1] * length + [0] * (seq_length_max - length) for length in lengths]
+    att_masks = [[0] * length + [1] * (seq_length_max - length) for length in lengths]
 
     token_ids_seqs = torch.tensor(token_ids_seqs, dtype=torch.long)
     att_masks = torch.tensor(att_masks, dtype=torch.bool)
@@ -105,28 +105,37 @@ def texts_to_tensors(texts, tokenizer):
 def texts_to_tensors_lambada(texts, vocab, split=False):
 
     vec = []
+    masks = []
+    max_length = 203
 
     if not split:
         for instance in texts:
             tensor = torch.tensor([vocab[token] for token in instance['text'].split()])
-            tensor = torch.cat([tensor, torch.ones(203 - len(tensor))])
+            length = len(tensor)
+            tensor = torch.cat([tensor, torch.ones(max_length - length)])
+            mask = [0] * length + [1] * (max_length - length)
             #print(tensor.shape)
             vec.append(tensor.unsqueeze(0))
+            masks.append(mask)
 
     else:
         for instance in texts:
             words = instance['text'].split()
             start = 0
-            for i in range(203, len(words), 203):
+            for i in range(max_length, len(words), max_length):
                 tensor = torch.tensor([vocab[token] for token in words[start:i]])
-                tensor = torch.cat([tensor, torch.ones(203 - len(tensor))]) # add padding
+                length = len(tensor)
+                tensor = torch.cat([tensor, torch.ones(max_length - length)]) # add padding
+                mask = [0] * length + [1] * (max_length - length)
                 #print(tensor.shape)
                 vec.append(tensor.unsqueeze(0))
+                masks.append(mask)
                 start = i
 
+    masks = torch.tensor(masks, dtype=torch.bool)
     vec2D = torch.cat(vec, axis=0)
     print(vec2D.shape)
-    return vec2D 
+    return vec2D, masks 
 
 def get_dataset(config, tokenizer=None):
     key = ("dataset", config.dataset)
