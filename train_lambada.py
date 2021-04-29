@@ -36,6 +36,7 @@ def run_model_on_dataset(
     for i, batch in enumerate(dataloader):
         device = torch.device(config.device)
         batch = tuple(t.to(device) for t in batch)
+        print(batch)
         (input_ids, masks) = batch
         print('dtype', input_ids.dtype)
         batch_logits = model(
