@@ -76,9 +76,9 @@ class LambadaDataset:
         test = data['test']
         test.remove_columns_(['domain'])
 
-        self.train = (texts_to_tensors_lambada(train, self.vocab, True))
-        self.val = (texts_to_tensors_lambada(val, self.vocab, False))
-        self.test = (texts_to_tensors_lambada(test, self.vocab, False))
+        self.train = texts_to_tensors_lambada(train, self.vocab, True, self.debug)
+        self.val = texts_to_tensors_lambada(val, self.vocab, False, self.debug)
+        self.test = texts_to_tensors_lambada(test, self.vocab, False, self.debug)
         
         print('data loaded')
 
@@ -102,7 +102,7 @@ def texts_to_tensors(texts, tokenizer):
     return TensorDataset(token_ids_seqs, att_masks)
 
 
-def texts_to_tensors_lambada(texts, vocab, split=False):
+def texts_to_tensors_lambada(texts, vocab, split=False, debug=False):
 
     vec = []
     masks = []
@@ -132,6 +132,9 @@ def texts_to_tensors_lambada(texts, vocab, split=False):
                 masks.append(mask)
                 start = i
 
+    if debug:
+        masks = masks[:10]
+        vec = vec[:10]
     masks = torch.tensor(masks, dtype=torch.bool)
     vec2D = torch.cat(vec, axis=0).type(torch.int64)
     print(vec2D.shape)

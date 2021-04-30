@@ -27,10 +27,12 @@ def run_model_on_dataset(
     )
 
     total_loss = 0
+    total_examples = 0
     preds = []
     #logits = []
     #label_ids = []
     batches_since_yield = 0
+    correct = 0
     criterion = nn.CrossEntropyLoss()
     torch.cuda.empty_cache()
 
@@ -49,6 +51,7 @@ def run_model_on_dataset(
         )
 
         total_loss += loss.item() * len(batch[0])  # Convert from mean to sum.
+        total_examples += len(batch[0])
 
         if model.training:
             optimizer.zero_grad()
@@ -59,7 +62,9 @@ def run_model_on_dataset(
 
         batch_logits = batch_logits.detach().cpu().numpy()
         #logits.append(batch_logits)
-        preds.extend(np.argmax(batch_logits, axis=1))
+        #preds = np.argmax(batch_logits, axis=1)
+        #correct += (preds == )
+        #preds.extend(np.argmax(batch_logits, axis=1))
         #label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
 
@@ -70,12 +75,14 @@ def run_model_on_dataset(
         ):
             logits = np.concatenate(logits, axis=0)
             #yield logits, preds, label_ids, total_loss / batches_since_yield
-            yield preds, total_loss / batches_since_yield
+            yield total_loss / total_examples #batches_since_yield
             total_loss = 0
+            total_examples = 0
             preds = []
             logits = []
             label_ids = []
             batches_since_yield = 0
+            correct = 0
 
     print('end run model on dataset')
 
@@ -121,7 +128,7 @@ def train(config, run):
         mini_batch_start_time = perf_counter()
 
         #for logits, preds, label_ids, loss in run_model_on_dataset(
-        for preds, loss in run_model_on_dataset(
+        for loss in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -144,7 +151,7 @@ def train(config, run):
             with torch.no_grad():
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
-                preds, loss = iter(
+                loss = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
@@ -259,7 +266,7 @@ def train(config, run):
         mini_batch_start_time = perf_counter()
 
         #for logits, preds, label_ids, loss in run_model_on_dataset(
-        for preds, loss in run_model_on_dataset(
+        for loss in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -282,7 +289,7 @@ def train(config, run):
             with torch.no_grad():
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
-                preds, loss = iter(
+                loss = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
