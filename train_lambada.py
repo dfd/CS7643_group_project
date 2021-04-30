@@ -2,6 +2,7 @@ import argparse
 import os
 from collections import defaultdict
 from time import perf_counter
+import sys
 
 import numpy as np
 import pandas as pd
@@ -62,6 +63,7 @@ def run_model_on_dataset(
         logits.append(batch_logits)
         print('2')
         preds.extend(np.argmax(batch_logits, axis=1))
+        print('size of preds', sys.getsizeof(preds))
         print('3')
         label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
