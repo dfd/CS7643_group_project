@@ -171,9 +171,6 @@ class UniversalTransformerEncoder(nn.Module):
         def step_func(state, step):
             state = self.positional_embedding(state)
             state = self.temporal_embedding(state, step)
-            print('src_key_padding_mask', src_key_padding_mask.shape)
-            print('mask', mask.shape)
-            print('src', src.shape)
             state = self.self_attn(
                 state,
                 state,
