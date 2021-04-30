@@ -57,17 +57,11 @@ def run_model_on_dataset(
             if scheduler is not None:
                 scheduler.step()
 
-        print('assignments')
-        batch_logits = batch_logits.detach().cpu().numpy()
-        print('1')
-        logits.append(batch_logits)
-        print('2')
+        #batch_logits = batch_logits.detach().cpu().numpy()
+        #logits.append(batch_logits)
         preds.extend(np.argmax(batch_logits, axis=1))
-        print('size of preds', sys.getsizeof(preds))
-        print('3')
-        label_ids.extend(batch[1][-1].detach().cpu().numpy())
+        #label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
-        print('past assignments')
 
         if (
             i == len(dataloader) - 1
@@ -75,7 +69,8 @@ def run_model_on_dataset(
             and (i + 1) % yield_freq == 0
         ):
             logits = np.concatenate(logits, axis=0)
-            yield logits, preds, label_ids, total_loss / batches_since_yield
+            #yield logits, preds, label_ids, total_loss / batches_since_yield
+            yield preds, total_loss / batches_since_yield
             total_loss = 0
             preds = []
             logits = []
@@ -125,7 +120,8 @@ def train(config, run):
         model.train()
         mini_batch_start_time = perf_counter()
 
-        for logits, preds, label_ids, loss in run_model_on_dataset(
+        #for logits, preds, label_ids, loss in run_model_on_dataset(
+        for preds, loss in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -147,7 +143,8 @@ def train(config, run):
             model.eval()
             with torch.no_grad():
                 start_time = perf_counter()
-                logits, preds, label_ids, loss = iter(
+                #logits, preds, label_ids, loss = iter(
+                preds, loss = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
@@ -261,7 +258,8 @@ def train(config, run):
         model.train()
         mini_batch_start_time = perf_counter()
 
-        for logits, preds, label_ids, loss in run_model_on_dataset(
+        #for logits, preds, label_ids, loss in run_model_on_dataset(
+        for preds, loss in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -283,7 +281,8 @@ def train(config, run):
             model.eval()
             with torch.no_grad():
                 start_time = perf_counter()
-                logits, preds, label_ids, loss = iter(
+                #logits, preds, label_ids, loss = iter(
+                preds, loss = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
