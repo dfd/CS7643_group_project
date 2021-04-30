@@ -28,8 +28,8 @@ def run_model_on_dataset(
 
     total_loss = 0
     preds = []
-    logits = []
-    label_ids = []
+    #logits = []
+    #label_ids = []
     batches_since_yield = 0
     criterion = nn.CrossEntropyLoss()
     torch.cuda.empty_cache()
@@ -57,7 +57,7 @@ def run_model_on_dataset(
             if scheduler is not None:
                 scheduler.step()
 
-        #batch_logits = batch_logits.detach().cpu().numpy()
+        batch_logits = batch_logits.detach().cpu().numpy()
         #logits.append(batch_logits)
         preds.extend(np.argmax(batch_logits, axis=1))
         #label_ids.extend(batch[1][-1].detach().cpu().numpy())
