@@ -293,9 +293,9 @@ def train(config, run):
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
-                    logits=logits,
-                    preds=preds,
-                    label_ids=label_ids,
+                    #logits=logits,
+                    #preds=preds,
+                    #label_ids=label_ids,
                     loss=loss,
                     runtime=perf_counter() - start_time,
                 )
