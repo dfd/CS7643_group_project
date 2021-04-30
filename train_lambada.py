@@ -56,6 +56,7 @@ def run_model_on_dataset(
             if scheduler is not None:
                 scheduler.step()
 
+        print('assignments')
         batch_logits = batch_logits.detach().cpu().numpy()
         logits.append(batch_logits)
         preds.extend(np.argmax(batch_logits, axis=1))
@@ -75,7 +76,7 @@ def run_model_on_dataset(
             label_ids = []
             batches_since_yield = 0
 
-        print('batch', i)
+        print('batch', i, 'size', input_ids.shape)
 
 def train(config, run):
     # Load stuff based on the config.
