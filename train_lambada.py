@@ -138,9 +138,9 @@ def train(config, run):
         ):
             step += 1
             train_metrics = compute_metrics(
-                logits=logits,
-                preds=preds,
-                label_ids=label_ids,
+                #logits=logits,
+                #preds=preds,
+                #label_ids=label_ids,
                 loss=loss,
                 runtime=perf_counter() - mini_batch_start_time,
             )
@@ -155,9 +155,9 @@ def train(config, run):
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
-                    logits=logits,
-                    preds=preds,
-                    label_ids=label_ids,
+                    #logits=logits,
+                    #preds=preds,
+                    #label_ids=label_ids,
                     loss=loss,
                     runtime=perf_counter() - start_time,
                 )
@@ -204,16 +204,16 @@ _step_metrics = defaultdict(lambda: [])
 
 
 def compute_metrics(
-    logits,
-    preds,
-    label_ids,
+    #logits,
+    #preds,
+    #label_ids,
     loss,
     runtime,
 ):
     return {
         "loss": loss,
-        "examples_per_second": len(preds) / runtime,
-        "sample_size": len(preds),
+        #"examples_per_second": len(preds) / runtime,
+        #"sample_size": len(preds),
     }
 
 
@@ -276,9 +276,9 @@ def train(config, run):
         ):
             step += 1
             train_metrics = compute_metrics(
-                logits=logits,
-                preds=preds,
-                label_ids=label_ids,
+                #logits=logits,
+                #preds=preds,
+                #label_ids=label_ids,
                 loss=loss,
                 runtime=perf_counter() - mini_batch_start_time,
             )
