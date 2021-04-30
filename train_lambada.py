@@ -36,9 +36,7 @@ def run_model_on_dataset(
     for i, batch in enumerate(dataloader):
         device = torch.device(config.device)
         batch = tuple(t.to(device) for t in batch)
-        print('batch shape', batch[0].shape)
         (input_ids, masks) = batch
-        print('dtype', input_ids.dtype)
         batch_logits = model(
             source_ids=input_ids[:, :-1],
             target_ids=input_ids[:, 1:],
@@ -77,6 +75,7 @@ def run_model_on_dataset(
             label_ids = []
             batches_since_yield = 0
 
+    print('batch', i)
 
 def train(config, run):
     # Load stuff based on the config.
