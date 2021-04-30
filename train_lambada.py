@@ -58,8 +58,11 @@ def run_model_on_dataset(
 
         print('assignments')
         batch_logits = batch_logits.detach().cpu().numpy()
+        print('1')
         logits.append(batch_logits)
+        print('2')
         preds.extend(np.argmax(batch_logits, axis=1))
+        print('3')
         label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
         print('past assignments')
