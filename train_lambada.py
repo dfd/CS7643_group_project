@@ -83,6 +83,7 @@ def run_model_on_dataset(
             label_ids = []
             batches_since_yield = 0
             correct = 0
+            print('batch', i)
 
     print('end run model on dataset')
 
