@@ -77,7 +77,7 @@ def run_model_on_dataset(
             label_ids = []
             batches_since_yield = 0
 
-        print('batch', i, 'size', input_ids.shape)
+        #print('batch', i, 'size', input_ids.shape)
 
 def train(config, run):
     # Load stuff based on the config.
