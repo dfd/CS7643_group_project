@@ -73,7 +73,7 @@ def run_model_on_dataset(
             or yield_freq is not None
             and (i + 1) % yield_freq == 0
         ):
-            logits = np.concatenate(logits, axis=0)
+            #logits = np.concatenate(logits, axis=0)
             #yield logits, preds, label_ids, total_loss / batches_since_yield
             yield total_loss / total_examples #batches_since_yield
             total_loss = 0
