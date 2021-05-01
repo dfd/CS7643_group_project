@@ -70,7 +70,9 @@ def run_model_on_dataset(
         
 
         #logits.append(batch_logits)
+        print('shape logits', batch_logits.shape)
         preds = np.argmax(batch_logits, axis=1)
+        print('shape preds', preds.shape)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
         print('compare targets')
