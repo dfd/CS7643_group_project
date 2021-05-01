@@ -77,7 +77,7 @@ def run_model_on_dataset(
 
 
         target_loss = criterion(
-            target_logits, target_words
+            target_logits.cuda(), target_words.cuda()
         )
         #print('compare targets')
         #print(target_words)
