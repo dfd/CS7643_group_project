@@ -12,7 +12,7 @@ model:
 optimizer:
   value: 'adam'
 epochs:
-  value: 20
+  value: 10
 batch_size:
   value: 8
 lr:
@@ -26,4 +26,4 @@ log_freq:
 checkpoint_metric:
   value: 'loss'
 dataset.debug:
-  value: True
+  value: False 
