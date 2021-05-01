@@ -114,8 +114,6 @@ def run_model_on_dataset(
             correct = 0
             #print('batch', i)
 
-    print('end run model on dataset')
-
 
 def log_step(
     run_type,
