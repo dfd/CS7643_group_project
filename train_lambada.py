@@ -291,7 +291,7 @@ def train(config, run):
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
                 loss = (
-                    next(run_model_on_dataset(model, data.val, config, yield_freq=None)
+                    next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
                     #logits=logits,
@@ -360,7 +360,9 @@ if __name__ == "__main__":
 
     if torch.cuda.is_available():
         config.device = "cuda"
+        print('using cuda')
     else:
         config.device = "cpu"
+        print('using cpu')
 
     train(config, run)
