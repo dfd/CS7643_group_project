@@ -61,9 +61,15 @@ def run_model_on_dataset(
                 scheduler.step()
 
         batch_logits = batch_logits.detach().cpu().numpy()
+        # find positions of last word #1s are the mask, so negate
+        indices = ~masks[:, 1:].sum(dim=1)
+        indices = indices.detach().cpu().numpy()
+        
+
         #logits.append(batch_logits)
-        #preds = np.argmax(batch_logits, axis=1)
-        #correct += (preds == )
+        preds = np.argmax(batch_logits, axis=1)
+        target_words = input_ids[:, :-1][:, indices]
+        correct += (preds == target_words)
         #preds.extend(np.argmax(batch_logits, axis=1))
         #label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
@@ -75,7 +81,10 @@ def run_model_on_dataset(
         ):
             #logits = np.concatenate(logits, axis=0)
             #yield logits, preds, label_ids, total_loss / batches_since_yield
-            yield total_loss / total_examples #batches_since_yield
+            mean_loss = total_loss / total_examples
+            perplexity = np.exp(mean_loss)
+            accuracy = correct / total_examples
+            yield  mean_loss, perplexity, accuracy #batches_since_yield
             total_loss = 0
             total_examples = 0
             preds = []
@@ -129,7 +138,7 @@ def train(config, run):
         mini_batch_start_time = perf_counter()
 
         #for logits, preds, label_ids, loss in run_model_on_dataset(
-        for loss in run_model_on_dataset(
+        for loss, perplexity, accuracy in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -143,6 +152,8 @@ def train(config, run):
                 #preds=preds,
                 #label_ids=label_ids,
                 loss=loss,
+                preplexity=perplexity,
+                accuracy=accuracy,
                 runtime=perf_counter() - mini_batch_start_time,
             )
             log_step("train", train_metrics, step=step, epoch=epoch)
@@ -152,7 +163,7 @@ def train(config, run):
             with torch.no_grad():
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
-                loss = iter(
+                loss, perplexity, accuracy = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
@@ -160,6 +171,8 @@ def train(config, run):
                     #preds=preds,
                     #label_ids=label_ids,
                     loss=loss,
+                    preplexity=perplexity,
+                    accuracy=accuracy,
                     runtime=perf_counter() - start_time,
                 )
                 log_step("val", val_metrics, step=step, epoch=epoch)
@@ -209,10 +222,15 @@ def compute_metrics(
     #preds,
     #label_ids,
     loss,
+    perplexity,
+    accuracy,
     runtime,
 ):
     return {
         "loss": loss,
+        "perplexity": perplexity,
+        "accuracy": accuracy,
+        "runtime": runtime
         #"examples_per_second": len(preds) / runtime,
         #"sample_size": len(preds),
     }
@@ -267,7 +285,7 @@ def train(config, run):
         mini_batch_start_time = perf_counter()
 
         #for logits, preds, label_ids, loss in run_model_on_dataset(
-        for loss in run_model_on_dataset(
+        for loss, perplexity, accuracy in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -281,6 +299,8 @@ def train(config, run):
                 #preds=preds,
                 #label_ids=label_ids,
                 loss=loss,
+                perplexity=perplexity,
+                accuracy=accuracy,
                 runtime=perf_counter() - mini_batch_start_time,
             )
             log_step("train", train_metrics, step=step, epoch=epoch)
@@ -290,7 +310,7 @@ def train(config, run):
             with torch.no_grad():
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
-                loss = (
+                loss = ( #iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
@@ -298,6 +318,8 @@ def train(config, run):
                     #preds=preds,
                     #label_ids=label_ids,
                     loss=loss,
+                    perplexity=perplexity,
+                    accuracy=accuracy,
                     runtime=perf_counter() - start_time,
                 )
                 log_step("val", val_metrics, step=step, epoch=epoch)
