@@ -74,6 +74,11 @@ def run_model_on_dataset(
         preds = np.argmax(target_logits, axis=1)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
+
+
+        target_loss = criterion(
+            batch_logits.view(-1, target_logits.size(-1)), target_words.reshape(-1)
+        )
         #print('compare targets')
         #print(target_words)
         #print(input_ids[:, 1:])
