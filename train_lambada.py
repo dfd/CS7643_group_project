@@ -80,7 +80,7 @@ def run_model_on_dataset(
         target_loss = criterion(
             torch.tensor(target_logits).cuda(), torch.tensor(target_words).cuda()
         )
-        total_target_loss += loss.item() * len(batch[0])  # Convert from mean to sum.
+        total_target_loss += target_loss.item() * len(batch[0])  # Convert from mean to sum.
 
         #print('compare targets')
         #print(target_words)
