@@ -62,26 +62,23 @@ def run_model_on_dataset(
 
         batch_logits = batch_logits.detach().cpu().numpy()
         # find positions of last word #1s are the mask, so negate
-        print('~masks')
-        print((~masks).type(torch.int64))
+        #print('~masks')
+        #print((~masks).type(torch.int64))
         indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
         indices = indices.detach().cpu().numpy() - 1
-        print('inidices', indices)
+        #print('inidices', indices)
         
 
         #logits.append(batch_logits)
-        #print('shape logits', batch_logits.shape)
         target_logits = batch_logits[torch.arange(batch_logits.shape[0]), indices, :]
-        #print('size target_logits', target_logits.shape)
         preds = np.argmax(target_logits, axis=1)
-        #print('shape preds', preds.shape)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
-        print('compare targets')
-        print(target_words)
-        print(input_ids[:, 1:])
-        print('preds')
-        print(preds)
+        #print('compare targets')
+        #print(target_words)
+        #print(input_ids[:, 1:])
+        #print('preds')
+        #print(preds)
         #preds.extend(np.argmax(batch_logits, axis=1))
         #label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
@@ -104,7 +101,7 @@ def run_model_on_dataset(
             label_ids = []
             batches_since_yield = 0
             correct = 0
-            print('batch', i)
+            #print('batch', i)
 
     print('end run model on dataset')
 
@@ -257,7 +254,7 @@ def train(config, run):
 
 
     # now score on test set
-    model.load_state_dict(TEMP_WEIGHTS_PATH)
+    model = torch.load(TEMP_WEIGHTS_PATH)
     model.eval()
     with torch.no_grad():
         start_time = perf_counter()
