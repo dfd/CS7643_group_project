@@ -65,7 +65,7 @@ def run_model_on_dataset(
         print('mask')
         print(masks)
         print('~masks')
-        print((~masks).type(torch.64))
+        print((~masks).type(torch.int64))
         indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
         indices = indices.detach().cpu().numpy()
         print('inidices', indices)
