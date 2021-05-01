@@ -68,7 +68,7 @@ def run_model_on_dataset(
 
         #logits.append(batch_logits)
         preds = np.argmax(batch_logits, axis=1)
-        target_words = input_ids[:, :-1][:, indices]
+        target_words = input_ids[:, 1:][:, indices]
         correct += (preds == target_words)
         print('compare targets')
         print(target_words)
