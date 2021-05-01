@@ -77,7 +77,7 @@ def run_model_on_dataset(
 
 
         target_loss = criterion(
-            target_logits.view(-1, target_logits.size(-1)), target_words.reshape(-1)
+            target_logits, target_words
         )
         #print('compare targets')
         #print(target_words)
