@@ -220,7 +220,7 @@ def train(config, run):
                 loss=loss,
                 perplexity=perplexity,
                 accuracy=accuracy,
-                target_perplexity=target_perplexity
+                target_perplexity=target_perplexity,
                 runtime=perf_counter() - mini_batch_start_time,
             )
             log_step("train", train_metrics, step=step, epoch=epoch)
