@@ -291,6 +291,7 @@ def train(config, run):
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
                 loss = iter(
+                    print(type(run_model_on_dataset(model, data.val, config, yield_freq=None)))
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(

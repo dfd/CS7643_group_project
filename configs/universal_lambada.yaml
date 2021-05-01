@@ -26,4 +26,4 @@ log_freq:
 checkpoint_metric:
   value: 'loss'
 dataset.debug:
-  value: False 
+  value: True
