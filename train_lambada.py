@@ -62,8 +62,6 @@ def run_model_on_dataset(
 
         batch_logits = batch_logits.detach().cpu().numpy()
         # find positions of last word #1s are the mask, so negate
-        print('mask')
-        print(masks)
         print('~masks')
         print((~masks).type(torch.int64))
         indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
@@ -73,11 +71,13 @@ def run_model_on_dataset(
 
         #logits.append(batch_logits)
         preds = np.argmax(batch_logits, axis=1)
-        target_words = input_ids[:, 1:][:, indices]
+        target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
         print('compare targets')
         print(target_words)
         print(input_ids[:, :-1])
+        print('preds')
+        print(preds)
         #preds.extend(np.argmax(batch_logits, axis=1))
         #label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
