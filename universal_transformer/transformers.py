@@ -96,6 +96,7 @@ class UniversalTransformer(nn.Transformer):
             custom_decoder=decoder,
         )
 
+        print(self.encoder.max_steps)
 
 class UniversalTransformerEncoder(nn.Module):
     def __init__(
