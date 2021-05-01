@@ -310,7 +310,7 @@ def train(config, run):
             with torch.no_grad():
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
-                loss = ( #iter(
+                loss = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
