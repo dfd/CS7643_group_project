@@ -64,6 +64,7 @@ def run_model_on_dataset(
         # find positions of last word #1s are the mask, so negate
         indices = ~masks[:, 1:].sum(dim=1)
         indices = indices.detach().cpu().numpy()
+        print('inidices', indices)
         
 
         #logits.append(batch_logits)
