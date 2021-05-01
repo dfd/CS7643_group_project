@@ -148,7 +148,7 @@ def compute_metrics(
         "loss": loss,
         "perplexity": perplexity,
         "accuracy": accuracy,
-        "target_perplexity": target_perplexity
+        "target_perplexity": target_perplexity,
         "runtime": runtime
         #"examples_per_second": len(preds) / runtime,
         #"sample_size": len(preds),
