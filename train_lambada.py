@@ -79,6 +79,8 @@ def run_model_on_dataset(
         target_loss = criterion(
             torch.tensor(target_logits).cuda(), torch.tensor(target_words).cuda()
         )
+        total_target_loss += loss.item() * len(batch[0])  # Convert from mean to sum.
+
         #print('compare targets')
         #print(target_words)
         #print(input_ids[:, 1:])
@@ -98,8 +100,11 @@ def run_model_on_dataset(
             mean_loss = total_loss / total_examples
             perplexity = np.exp(mean_loss)
             accuracy = correct / total_examples
-            yield  mean_loss, perplexity, accuracy #batches_since_yield
+            mean_target_loss = total_target_loss / total_examples
+            target_perplexity = np.exp(mean_target_loss)
+            yield  mean_loss, perplexity, accuracy, target_perplexity #batches_since_yield
             total_loss = 0
+            total_target_loss = 0
             total_examples = 0
             preds = []
             logits = []
@@ -136,12 +141,14 @@ def compute_metrics(
     loss,
     perplexity,
     accuracy,
+    target_perplexity,
     runtime,
 ):
     return {
         "loss": loss,
         "perplexity": perplexity,
         "accuracy": accuracy,
+        "target_perplexity": target_perplexity
         "runtime": runtime
         #"examples_per_second": len(preds) / runtime,
         #"sample_size": len(preds),
@@ -197,7 +204,7 @@ def train(config, run):
         mini_batch_start_time = perf_counter()
 
         #for logits, preds, label_ids, loss in run_model_on_dataset(
-        for loss, perplexity, accuracy in run_model_on_dataset(
+        for loss, perplexity, accuracy, target_perplexity in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -213,6 +220,7 @@ def train(config, run):
                 loss=loss,
                 perplexity=perplexity,
                 accuracy=accuracy,
+                target_perplexity=target_perplexity
                 runtime=perf_counter() - mini_batch_start_time,
             )
             log_step("train", train_metrics, step=step, epoch=epoch)
@@ -222,7 +230,7 @@ def train(config, run):
             with torch.no_grad():
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
-                loss, perplexity, accuracy = iter(
+                loss, perplexity, accuracy, target_perplexity = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
@@ -232,6 +240,7 @@ def train(config, run):
                     loss=loss,
                     perplexity=perplexity,
                     accuracy=accuracy,
+                    target_perplexity=target_perplexity,
                     runtime=perf_counter() - start_time,
                 )
                 log_step("val", val_metrics, step=step, epoch=epoch)
@@ -264,7 +273,7 @@ def train(config, run):
     with torch.no_grad():
         start_time = perf_counter()
         #logits, preds, label_ids, loss = iter(
-        loss, perplexity, accuracy = iter(
+        loss, perplexity, accuracy, target_perplexity = iter(
             next(run_model_on_dataset(model, data.test, config, yield_freq=None))
         )
         val_metrics = compute_metrics(
@@ -274,6 +283,7 @@ def train(config, run):
             loss=loss,
             perplexity=perplexity,
             accuracy=accuracy,
+            target_perplexity=target_perplexity,
             runtime=perf_counter() - start_time,
         )
         log_step("test", val_metrics, step=step, epoch=epoch)
