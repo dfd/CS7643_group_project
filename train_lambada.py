@@ -73,7 +73,7 @@ def run_model_on_dataset(
         print('shape logits', batch_logits.shape)
         target_logits = batch_logits[torch.arange(batch_logits.shape[0]), indices, :]
         print('size target_logits', target_logits.shape)
-        preds = np.argmax(batch_logits, axis=1)
+        preds = np.argmax(target_logits, axis=1)
         print('shape preds', preds.shape)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
