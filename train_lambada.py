@@ -27,6 +27,7 @@ def run_model_on_dataset(
     )
 
     total_loss = 0
+    total_target_loss = 0
     total_examples = 0
     preds = []
     #logits = []
