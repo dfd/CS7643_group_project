@@ -70,6 +70,9 @@ def run_model_on_dataset(
         preds = np.argmax(batch_logits, axis=1)
         target_words = input_ids[:, :-1][:, indices]
         correct += (preds == target_words)
+        print('compare targets')
+        print(target_words)
+        print(input_ids[:, :-1])
         #preds.extend(np.argmax(batch_logits, axis=1))
         #label_ids.extend(batch[1][-1].detach().cpu().numpy())
         batches_since_yield += 1
@@ -95,108 +98,6 @@ def run_model_on_dataset(
             print('batch', i)
 
     print('end run model on dataset')
-
-def train(config, run):
-    # Load stuff based on the config.
-    tokenizer = tokenizers.get_tokenizer(config)
-
-    data = datasets.get_dataset(config, tokenizer)
-    config.train_size = len(data.train)
-    config.val_size = len(data.val)
-
-    embedding_matrix = vectors.get_vectors(config, tokenizer)
-
-    model = models.get_model(config, embedding_matrix)
-
-    if config.log is not None:
-        wandb.watch(model, log=config.log)
-
-    device = torch.device(config.device)
-    model.to(device)
-
-    best_performance = None
-    step = 0
-    for epoch in range(1, config.epochs + 1):
-        if config.optimizer == "adam":
-            optimizer = Adam(model.parameters(), lr=config.lr)
-        elif config.optimizer == "rmsprop":
-            optimizer = RMSprop(model.parameters(), lr=config.lr)
-        else:
-            raise ValueError(f'"{config.optimizer}" is an invalid optimizer name!')
-
-        scheduler = None
-        if config.get("learning_rate_decay_schedule", None) is not None:
-            if config.learning_rate_decay_schedule == "linear":
-                scheduler = get_linear_schedule_with_warmup(
-                    optimizer,
-                    num_warmup_steps=0,
-                    num_training_steps=len(data.train) * config.epochs,
-                )
-            else:
-                raise ValueError(f'"{config.optimizer}" is an invalid optimizer name!')
-        model.train()
-        mini_batch_start_time = perf_counter()
-
-        #for logits, preds, label_ids, loss in run_model_on_dataset(
-        for loss, perplexity, accuracy in run_model_on_dataset(
-            model,
-            data.train,
-            config,
-            yield_freq=config.get("log_freq"),
-            optimizer=optimizer,
-            scheduler=scheduler,
-        ):
-            step += 1
-            train_metrics = compute_metrics(
-                #logits=logits,
-                #preds=preds,
-                #label_ids=label_ids,
-                loss=loss,
-                preplexity=perplexity,
-                accuracy=accuracy,
-                runtime=perf_counter() - mini_batch_start_time,
-            )
-            log_step("train", train_metrics, step=step, epoch=epoch)
-
-            # Validate
-            model.eval()
-            with torch.no_grad():
-                start_time = perf_counter()
-                #logits, preds, label_ids, loss = iter(
-                loss, perplexity, accuracy = iter(
-                    next(run_model_on_dataset(model, data.val, config, yield_freq=None))
-                )
-                val_metrics = compute_metrics(
-                    #logits=logits,
-                    #preds=preds,
-                    #label_ids=label_ids,
-                    loss=loss,
-                    preplexity=perplexity,
-                    accuracy=accuracy,
-                    runtime=perf_counter() - start_time,
-                )
-                log_step("val", val_metrics, step=step, epoch=epoch)
-                log_summary("val")
-
-                if config.checkpoint_metric is not None:
-                    if (
-                        best_performance is None
-                        or val_metrics[config.checkpoint_metric] > best_performance
-                    ):
-                        best_performance = val_metrics[config.checkpoint_metric]
-                        torch.save(model.state_dict(), TEMP_WEIGHTS_PATH)
-
-            model.train()  # Need to re-enter training model.
-
-            mini_batch_start_time = perf_counter()
-
-    if config.checkpoint_metric is not None:
-        # Save the best model weights.
-        artifact = wandb.Artifact(
-            f"{run.name.replace('-', '_')}_best_weights", type="weights"
-        )
-        artifact.add_file(TEMP_WEIGHTS_PATH)
-        run.log_artifact(artifact)
 
 
 def log_step(
@@ -344,6 +245,29 @@ def train(config, run):
         )
         artifact.add_file(TEMP_WEIGHTS_PATH)
         run.log_artifact(artifact)
+
+
+    # now score on test set
+    model.load_state_dict(TEMP_WEIGHTS_PATH)
+    model.eval()
+    with torch.no_grad():
+        start_time = perf_counter()
+        #logits, preds, label_ids, loss = iter(
+        loss, perplexity, accuracy = iter(
+            next(run_model_on_dataset(model, data.test, config, yield_freq=None))
+        )
+        val_metrics = compute_metrics(
+            #logits=logits,
+            #preds=preds,
+            #label_ids=label_ids,
+            loss=loss,
+            perplexity=perplexity,
+            accuracy=accuracy,
+            runtime=perf_counter() - start_time,
+        )
+        log_step("test", val_metrics, step=step, epoch=epoch)
+        log_summary("test")
+
 
 
 class ConfigWrapper:
