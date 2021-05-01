@@ -254,7 +254,7 @@ def train(config, run):
 
 
     # now score on test set
-    model = torch.load(TEMP_WEIGHTS_PATH)
+    model.load_state_dict(torch.load(TEMP_WEIGHTS_PATH))
     model.eval()
     with torch.no_grad():
         start_time = perf_counter()
