@@ -142,10 +142,8 @@ def texts_to_tensors_lambada(texts, vocab, split=False, keep=None, debug=False):
     vec2D = torch.cat(vec, axis=0).type(torch.int64)
     if keep:
         rows = torch.randperm(vec2D.shape[0])[:keep]
-        print('masks shape', masks.shape)
-        print('vec shape', vec2D.shape)
-        masks = masks[rows, torch.arange(masks.shape[1])]
-        vec2D = vec2D[rows, torch.arange(vec2D.shape[1])]
+        masks = masks[rows, :]
+        vec2D = vec2D[rows, :]
     print(vec2D.shape)
     return TensorDataset(vec2D, masks)
 
