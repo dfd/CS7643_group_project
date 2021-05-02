@@ -1,0 +1,39 @@
+wandb_version: 1
+undersample:
+  value: True
+tokenizer:
+  value: 'en_core_web_md'
+vectors:
+  value: 'en_core_web_md'
+dataset:
+  value: 'lambada'
+model:
+  value: 'universal_transformer'
+optimizer:
+  value: 'adam'
+epochs:
+  value: 4 
+batch_size:
+  value: 24 
+lr:
+  value: 0.00003
+log:
+  value: null
+learning_rate_decay_schedule:
+  value: null
+log_freq:
+  value: null
+checkpoint_metric:
+  value: 'loss'
+dataset.debug:
+  value: False
+dataset.keep:
+  value: 500000
+model.nhead:
+  value: 8
+model.max_steps:
+  value: 6
+model.halting_threshold:
+  value: 0.9
+model.max_length:
+  value: 203
