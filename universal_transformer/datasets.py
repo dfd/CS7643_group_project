@@ -159,4 +159,4 @@ def get_dataset(config, tokenizer=None):
         kwargs["tokenizer"] = tokenizer
         return cls(**kwargs)
 
-    raise KeyError("Dataset " + key + " not found!")
+    raise KeyError("Dataset " + str(key) + " not found in " + str(registry.keys()))
