@@ -53,7 +53,6 @@ def run_model_on_dataset(
         )
 
         total_loss += loss.item() * len(batch[0])  # Convert from mean to sum.
-        total_examples += len(batch[0])
 
         if model.training:
             optimizer.zero_grad()
@@ -67,8 +66,10 @@ def run_model_on_dataset(
         #print('~masks')
         #print((~masks).type(torch.int64))
         indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
+        sum_of_words = indices.sum()
         indices = indices.detach().cpu().numpy() - 1
         #print('inidices', indices)
+        total_examples += sum_of_words
         
 
         #logits.append(batch_logits)
