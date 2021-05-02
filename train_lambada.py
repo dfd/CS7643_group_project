@@ -53,7 +53,15 @@ def run_model_on_dataset(
             batch_logits.view(-1, batch_logits.size(-1)), input_ids[:, 1:].reshape(-1)
         )
 
-        total_loss += loss.item() * len(batch[0])  # Convert from mean to sum.
+        indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
+        batch_words += indices.sum()
+        sum_of_words += batch_words
+        indices = indices.detach().cpu().numpy() - 1
+        #print('inidices', indices)
+        batch_examples = len(batch[0]) 
+        total_examples += batch_examples
+
+        total_loss += loss.item() * batch_words # Convert from mean to sum.
 
         if model.training:
             optimizer.zero_grad()
@@ -66,11 +74,7 @@ def run_model_on_dataset(
         # find positions of last word #1s are the mask, so negate
         #print('~masks')
         #print((~masks).type(torch.int64))
-        indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
-        sum_of_words += indices.sum()
-        indices = indices.detach().cpu().numpy() - 1
-        #print('inidices', indices)
-        total_examples += len(batch[0])
+
         
 
         #logits.append(batch_logits)
@@ -83,7 +87,7 @@ def run_model_on_dataset(
         target_loss = criterion(
             torch.tensor(target_logits).cuda(), torch.tensor(target_words).cuda()
         )
-        total_target_loss += target_loss.item() * len(batch[0])  # Convert from mean to sum.
+        total_target_loss += target_loss.item() * batch_examples # Convert from mean to sum.
 
         #print('compare targets')
         #print(target_words)
