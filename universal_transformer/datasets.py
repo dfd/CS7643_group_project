@@ -58,7 +58,7 @@ class BabiDataset:
 
 @register_class(("dataset", "lambada"))
 class LambadaDataset:
-    def __init__(self, tokenizer=None, debug=False):
+    def __init__(self, tokenizer=None, keep=None, debug=False):
         self.debug = debug
 
         path = os.path.join(DATA_DIR_PATH, "lambada", "lambada-vocab-2.txt")
@@ -76,9 +76,9 @@ class LambadaDataset:
         test = data['test']
         test.remove_columns_(['domain'])
 
-        self.train = texts_to_tensors_lambada(train, self.vocab, True, self.debug)
-        self.val = texts_to_tensors_lambada(val, self.vocab, False, self.debug)
-        self.test = texts_to_tensors_lambada(test, self.vocab, False, self.debug)
+        self.train = texts_to_tensors_lambada(train, self.vocab, True, keep, self.debug)
+        self.val = texts_to_tensors_lambada(val, self.vocab, False, keep, self.debug)
+        self.test = texts_to_tensors_lambada(test, self.vocab, False, keep, self.debug)
         
         print('data loaded')
 
