@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 from time import perf_counter
 import sys
+import random
 
 import numpy as np
 import pandas as pd
@@ -309,6 +310,13 @@ class ConfigWrapper:
         else:
             setattr(self.config, key, value)
 
+def seed_torch(seed=0):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -331,4 +339,5 @@ if __name__ == "__main__":
         config.device = "cpu"
         print('using cpu')
 
+    seed_torch()
     train(config, run)
