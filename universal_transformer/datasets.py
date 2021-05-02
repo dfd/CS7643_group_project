@@ -148,6 +148,7 @@ def texts_to_tensors_lambada(texts, vocab, split=False, keep=None, debug=False):
     return TensorDataset(vec2D, masks)
 
 def get_dataset(config, tokenizer=None):
+    print(config)
     key = ("dataset", config.dataset)
     if key in registry:
         cls, kwargs = registry[key]
