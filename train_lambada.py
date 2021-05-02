@@ -30,6 +30,7 @@ def run_model_on_dataset(
     total_loss = 0
     total_target_loss = 0
     total_examples = 0
+    sum_of_words = 0
     preds = []
     #logits = []
     #label_ids = []
@@ -66,10 +67,10 @@ def run_model_on_dataset(
         #print('~masks')
         #print((~masks).type(torch.int64))
         indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
-        sum_of_words = indices.sum()
+        sum_of_words += indices.sum()
         indices = indices.detach().cpu().numpy() - 1
         #print('inidices', indices)
-        total_examples += sum_of_words
+        total_examples += len(batch[0])
         
 
         #logits.append(batch_logits)
@@ -100,7 +101,7 @@ def run_model_on_dataset(
         ):
             #logits = np.concatenate(logits, axis=0)
             #yield logits, preds, label_ids, total_loss / batches_since_yield
-            mean_loss = total_loss / total_examples
+            mean_loss = total_loss / sum_of_words 
             perplexity = np.exp(mean_loss.detach().cpu().numpy())
             accuracy = correct / total_examples
             mean_target_loss = total_target_loss / total_examples
@@ -109,6 +110,7 @@ def run_model_on_dataset(
             total_loss = 0
             total_target_loss = 0
             total_examples = 0
+            sum_of_words = 0
             preds = []
             logits = []
             label_ids = []
