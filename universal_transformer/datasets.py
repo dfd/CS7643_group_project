@@ -136,8 +136,8 @@ def texts_to_tensors_lambada(texts, vocab, split=False, debug=False):
         masks = masks[:10]
         vec = vec[:10]
     else:
-        masks = masks[:100000]
-        vec = vec[:100000]
+        masks = masks[:10000]
+        vec = vec[:10000]
     masks = torch.tensor(masks, dtype=torch.bool)
     vec2D = torch.cat(vec, axis=0).type(torch.int64)
     print(vec2D.shape)
