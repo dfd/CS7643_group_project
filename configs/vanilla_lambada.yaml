@@ -6,15 +6,15 @@ tokenizer:
 vectors:
   value: 'en_core_web_md'
 dataset:
-  value: 'babi'
+  value: 'lambada'
 model:
   value: 'vanilla_transformer'
 optimizer:
   value: 'adam'
 epochs:
-  value: 20
+  value: 2
 batch_size:
-  value: 8
+  value: 24
 lr:
   value: 0.0001
 log:
@@ -26,4 +26,12 @@ log_freq:
 checkpoint_metric:
   value: 'loss'
 dataset.debug:
-  value: True
+  value: False
+dataset.keep:
+  value: 1000
+model.nhead:
+  value: 8
+model.num_layers:
+  value: 6
+model.max_length:
+  value: 203

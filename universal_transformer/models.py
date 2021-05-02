@@ -31,7 +31,7 @@ class TransformerModelBase(nn.Module):
             self.embedding = nn.Embedding(self.vocab_size, self.embedding_size)
 
         self.transformer = self.transformer_class(
-            d_model=self.embedding_size, nhead=4, **kwargs
+            d_model=self.embedding_size, **kwargs
         )
         self.output_linear = nn.Linear(self.embedding_size, self.vocab_size)
 

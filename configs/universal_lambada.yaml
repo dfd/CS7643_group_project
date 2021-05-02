@@ -26,4 +26,14 @@ log_freq:
 checkpoint_metric:
   value: 'loss'
 dataset.debug:
-  value: False 
+  value: False
+dataset.keep:
+  value: 1000
+model.nhead:
+  value: 8
+model.max_steps:
+  value: 6
+model.halting_threshold:
+  value: 0.9
+model.max_length:
+  value: 203

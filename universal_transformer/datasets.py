@@ -102,7 +102,7 @@ def texts_to_tensors(texts, tokenizer):
     return TensorDataset(token_ids_seqs, att_masks)
 
 
-def texts_to_tensors_lambada(texts, vocab, split=False, debug=False):
+def texts_to_tensors_lambada(texts, vocab, split=False, keep=None, debug=False):
 
     vec = []
     masks = []
@@ -135,11 +135,15 @@ def texts_to_tensors_lambada(texts, vocab, split=False, debug=False):
     if debug:
         masks = masks[:10]
         vec = vec[:10]
-    else:
-        masks = masks[:1000]
-        vec = vec[:1000]
+    #else:
+    #    masks = masks[:1000]
+    #    vec = vec[:1000]
     masks = torch.tensor(masks, dtype=torch.bool)
     vec2D = torch.cat(vec, axis=0).type(torch.int64)
+    if keep:
+        rows = torch.randperm(vec2D.shape[0])[:keep]
+        masks = masks[rows, torch.arange(masks.shape[1])]
+        vec2D = vec2D[rows, torch.arange(vec2D.shape[1])]
     print(vec2D.shape)
     return TensorDataset(vec2D, masks)
 
