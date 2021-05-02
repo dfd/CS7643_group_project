@@ -54,7 +54,7 @@ def run_model_on_dataset(
         )
 
         indices = (~masks[:, 1:]).type(torch.int64).sum(dim=1)
-        batch_words += indices.sum()
+        batch_words = indices.sum()
         sum_of_words += batch_words
         indices = indices.detach().cpu().numpy() - 1
         #print('inidices', indices)
