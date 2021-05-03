@@ -107,7 +107,7 @@ def run_model_on_dataset(
         print('padding')
         print(masks)
         print('attention')
-        print(transformer.generate_square_subsequent_mask(
+        print(model.transformer.generate_square_subsequent_mask(
             input_ids[:, :-1]
         ))
         #print('preds')
