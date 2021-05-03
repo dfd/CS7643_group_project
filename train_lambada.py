@@ -106,6 +106,8 @@ def run_model_on_dataset(
             #logits = np.concatenate(logits, axis=0)
             #yield logits, preds, label_ids, total_loss / batches_since_yield
             mean_loss = total_loss / sum_of_words
+            print('ml', type(mean_loss))
+            print(mean_loss)
             perplexity = np.exp(mean_loss.detach().cpu().numpy())
             accuracy = correct / total_examples
             mean_target_loss = total_target_loss / total_examples
