@@ -45,9 +45,9 @@ def run_model_on_dataset(
         (input_ids, masks) = batch
         batch_logits = model(
             source_ids=input_ids[:, :-1],
-            target_ids=input_ids[:, 1:],
+            target_ids=input_ids[:, :-1],
             source_padding_mask=masks[:, :-1],
-            target_padding_mask=masks[:, 1:],
+            target_padding_mask=masks[:, :-1],
         )
         loss = criterion(
             batch_logits.view(-1, batch_logits.size(-1)), input_ids[:, 1:].reshape(-1)
@@ -81,7 +81,7 @@ def run_model_on_dataset(
         target_logits = batch_logits[torch.arange(batch_logits.shape[0]), indices, :]
         preds = np.argmax(target_logits, axis=1)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
-        correct += (preds == target_words)
+        correct += (preds == target_words).sum()
 
 
         target_loss = criterion(
