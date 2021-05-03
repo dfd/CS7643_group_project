@@ -40,6 +40,7 @@ def run_model_on_dataset(
     torch.cuda.empty_cache()
 
     for i, batch in enumerate(dataloader):
+        print('----------------------------')
         device = torch.device(config.device)
         batch = tuple(t.to(device) for t in batch)
         (input_ids, masks) = batch
@@ -62,6 +63,10 @@ def run_model_on_dataset(
         total_examples += batch_examples
 
         total_loss += loss.item() * batch_words # Convert from mean to sum.
+        print('total_loss', total_loss)
+        print('loss', loss.item())
+        print('batch_words', batch_words)
+        print('sum of words', sum_of_words)
 
         if model.training:
             optimizer.zero_grad()
@@ -89,6 +94,10 @@ def run_model_on_dataset(
         )
         total_target_loss += target_loss.item() * batch_examples # Convert from mean to sum.
 
+        print('target_loss', target_loss.item())
+        print('total_target_loss', total_target_loss)
+        print('batch_examples', batch_examples)
+
         #print('compare targets')
         #print(target_words)
         #print(input_ids[:, 1:])
@@ -110,6 +119,13 @@ def run_model_on_dataset(
             accuracy = correct / total_examples
             mean_target_loss = total_target_loss / total_examples
             target_perplexity = np.exp(mean_target_loss)
+            print('at yield')
+            print('total_loss', total_loss)
+            print('sum of words', sum_of_words)
+            print('mean_loss', mean_loss)
+            print('total_traget_loss', total_loss)
+            print('total_examples', total_examples)
+            print('mean_target_loss', mean_target_loss)
             yield  mean_loss, perplexity, accuracy, target_perplexity #batches_since_yield
             total_loss = 0
             total_target_loss = 0
