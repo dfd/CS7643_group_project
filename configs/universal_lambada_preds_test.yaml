@@ -14,7 +14,7 @@ optimizer:
 epochs:
   value: 1 
 batch_size:
-  value: 24 
+  value: 4 
 lr:
   value: 0.0001
 log:
