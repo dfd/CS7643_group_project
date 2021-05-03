@@ -82,6 +82,8 @@ def run_model_on_dataset(
         preds = np.argmax(target_logits, axis=1)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         print(type(preds == target_words))
+        print(type(preds))
+        print(type(target_words))
         correct += (preds == target_words).sum()
 
 
