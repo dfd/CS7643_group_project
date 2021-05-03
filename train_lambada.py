@@ -86,7 +86,7 @@ def run_model_on_dataset(
 
         target_loss = criterion(
             #torch.tensor(target_logits).cuda(), torch.tensor(target_words).cuda()
-            torch.tensor(target_logits).to(config.device), torch.tensor(target_words).to(config.device)
+            torch.tensor(target_logits).to(config.device), target_words
         )
         total_target_loss += target_loss.item() * batch_examples # Convert from mean to sum.
 
@@ -106,7 +106,7 @@ def run_model_on_dataset(
         ):
             #logits = np.concatenate(logits, axis=0)
             #yield logits, preds, label_ids, total_loss / batches_since_yield
-            mean_loss = (total_loss / sum_of_words).detach().cpu().numpy()
+            mean_loss = (total_loss / sum_of_words).detach().cpu().numpy().item(0)
             perplexity = np.exp(mean_loss)
             accuracy = correct / total_examples
             mean_target_loss = total_target_loss / total_examples
