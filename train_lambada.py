@@ -82,6 +82,7 @@ def run_model_on_dataset(
         preds = np.argmax(target_logits, axis=1)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
+        probs = target_logits[torch.arange(target_logits.shape[0]), target_words]
 
 
         target_loss = criterion(
@@ -110,7 +111,7 @@ def run_model_on_dataset(
             accuracy = correct / total_examples
             mean_target_loss = total_target_loss / total_examples
             target_perplexity = np.exp(mean_target_loss)
-            yield  mean_loss, perplexity, accuracy, target_perplexity #batches_since_yield
+            yield  mean_loss, perplexity, accuracy, target_perplexity, probs #batches_since_yield
             total_loss = 0
             total_target_loss = 0
             total_examples = 0
@@ -211,7 +212,7 @@ def train(config, run):
         mini_batch_start_time = perf_counter()
 
         #for logits, preds, label_ids, loss in run_model_on_dataset(
-        for loss, perplexity, accuracy, target_perplexity in run_model_on_dataset(
+        for loss, perplexity, accuracy, target_perplexity, probs in run_model_on_dataset(
             model,
             data.train,
             config,
@@ -231,13 +232,14 @@ def train(config, run):
                 runtime=perf_counter() - mini_batch_start_time,
             )
             log_step("train", train_metrics, step=step, epoch=epoch)
+            print('train probs', probs)
 
             # Validate
             model.eval()
             with torch.no_grad():
                 start_time = perf_counter()
                 #logits, preds, label_ids, loss = iter(
-                loss, perplexity, accuracy, target_perplexity = iter(
+                loss, perplexity, accuracy, target_perplexity, probs = iter(
                     next(run_model_on_dataset(model, data.val, config, yield_freq=None))
                 )
                 val_metrics = compute_metrics(
@@ -252,6 +254,7 @@ def train(config, run):
                 )
                 log_step("val", val_metrics, step=step, epoch=epoch)
                 log_summary("val")
+                print('val probs', probs)
 
                 if config.checkpoint_metric is not None:
                     if (
