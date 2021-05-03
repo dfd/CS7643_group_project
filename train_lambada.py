@@ -232,7 +232,7 @@ def train(config, run):
                 runtime=perf_counter() - mini_batch_start_time,
             )
             log_step("train", train_metrics, step=step, epoch=epoch)
-            print('train probs', probs)
+            print('train probs', np.exp(probs))
 
             # Validate
             model.eval()
@@ -254,7 +254,7 @@ def train(config, run):
                 )
                 log_step("val", val_metrics, step=step, epoch=epoch)
                 log_summary("val")
-                print('val probs', probs)
+                print('val probs', np.exp(probs))
 
                 if config.checkpoint_metric is not None:
                     if (
@@ -283,7 +283,7 @@ def train(config, run):
     with torch.no_grad():
         start_time = perf_counter()
         #logits, preds, label_ids, loss = iter(
-        loss, perplexity, accuracy, target_perplexity = iter(
+        loss, perplexity, accuracy, target_perplexity, probs = iter(
             next(run_model_on_dataset(model, data.test, config, yield_freq=None))
         )
         val_metrics = compute_metrics(
