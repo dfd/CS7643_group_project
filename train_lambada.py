@@ -82,7 +82,9 @@ def run_model_on_dataset(
         preds = np.argmax(target_logits, axis=1)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
-        probs = target_logits[torch.arange(target_logits.shape[0]), target_words.detach().cpu().numpy()]
+        probs = torch.nn.functional.softmax(target_logits, axis=1)
+        print('after softmax', probs)
+        probs = probs[torch.arange(probs.shape[0]), target_words.detach().cpu().numpy()]
 
 
         target_loss = criterion(
@@ -232,7 +234,7 @@ def train(config, run):
                 runtime=perf_counter() - mini_batch_start_time,
             )
             log_step("train", train_metrics, step=step, epoch=epoch)
-            print('train probs', np.exp(probs))
+            print('train probs', probs)
 
             # Validate
             model.eval()
@@ -254,7 +256,7 @@ def train(config, run):
                 )
                 log_step("val", val_metrics, step=step, epoch=epoch)
                 log_summary("val")
-                print('val probs', np.exp(probs))
+                print('val probs', probs)
 
                 if config.checkpoint_metric is not None:
                     if (
