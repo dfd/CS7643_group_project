@@ -84,7 +84,6 @@ def run_model_on_dataset(
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
         probs = softmax(target_logits, axis=1)
-        print('after softmax', probs)
         probs = probs[torch.arange(probs.shape[0]), target_words.detach().cpu().numpy()]
 
 
