@@ -85,7 +85,8 @@ def run_model_on_dataset(
 
 
         target_loss = criterion(
-            torch.tensor(target_logits).cuda(), torch.tensor(target_words).cuda()
+            #torch.tensor(target_logits).cuda(), torch.tensor(target_words).cuda()
+            torch.tensor(target_logits).to(config.device), torch.tensor(target_words).to(config.device)
         )
         total_target_loss += target_loss.item() * batch_examples # Convert from mean to sum.
 
