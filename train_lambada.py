@@ -98,9 +98,9 @@ def run_model_on_dataset(
         print('total_target_loss', total_target_loss)
         print('batch_examples', batch_examples)
 
-        #print('compare targets')
-        #print(target_words)
-        #print(input_ids[:, 1:])
+        print('compare targets')
+        print(target_words)
+        print(input_ids[:, 1:])
         #print('preds')
         #print(preds)
         #preds.extend(np.argmax(batch_logits, axis=1))
@@ -123,7 +123,7 @@ def run_model_on_dataset(
             print('total_loss', total_loss)
             print('sum of words', sum_of_words)
             print('mean_loss', mean_loss)
-            print('total_traget_loss', total_loss)
+            print('total_traget_loss', total_target_loss)
             print('total_examples', total_examples)
             print('mean_target_loss', mean_target_loss)
             yield  mean_loss, perplexity, accuracy, target_perplexity #batches_since_yield
