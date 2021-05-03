@@ -5,6 +5,7 @@ from time import perf_counter
 import sys
 import random
 
+from scipy.special import softmax
 import numpy as np
 import pandas as pd
 import torch
@@ -82,7 +83,7 @@ def run_model_on_dataset(
         preds = np.argmax(target_logits, axis=1)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
-        probs = torch.nn.functional.softmax(target_logits, dim=1)
+        probs = softmax(target_logits, axis=1)
         print('after softmax', probs)
         probs = probs[torch.arange(probs.shape[0]), target_words.detach().cpu().numpy()]
 
