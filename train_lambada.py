@@ -108,7 +108,7 @@ def run_model_on_dataset(
         print(masks)
         print('attention')
         print(model.transformer.generate_square_subsequent_mask(
-            input_ids[:, :-1]
+            input_ids[:, :-1].size(0)
         ))
         #print('preds')
         #print(preds)
