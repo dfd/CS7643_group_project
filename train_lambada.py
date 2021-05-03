@@ -107,6 +107,9 @@ def run_model_on_dataset(
         print('padding')
         print(masks)
         print('attention')
+        print(model.transformer.generate_square_subsequent_mask(
+            input_ids[:, :-1].size(1)
+        ))
         #print('preds')
         #print(preds)
         #preds.extend(np.argmax(batch_logits, axis=1))
