@@ -108,7 +108,7 @@ def run_model_on_dataset(
             mean_loss = total_loss / sum_of_words 
             perplexity = np.exp(mean_loss.detach().cpu().numpy())
             accuracy = correct / total_examples
-            mean_target_loss = (total_target_loss / total_examples).detach().cpu().numpy()).sum()
+            mean_target_loss = (total_target_loss / total_examples).detach().cpu().numpy().sum()
             target_perplexity = np.exp(mean_target_loss)
             yield  mean_loss, perplexity, accuracy, target_perplexity #batches_since_yield
             total_loss = 0
