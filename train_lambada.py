@@ -82,6 +82,8 @@ def run_model_on_dataset(
         preds = np.argmax(target_logits, axis=1)
         target_words = input_ids[:, 1:][torch.arange(input_ids.shape[0]), indices] #[:, indices]
         correct += (preds == target_words)
+        print('tl', target_logits)
+        print('tw', target_words)
         probs = target_logits[torch.arange(target_logits.shape[0]), target_words]
 
 
