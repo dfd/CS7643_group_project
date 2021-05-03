@@ -101,6 +101,15 @@ def run_model_on_dataset(
         print('compare targets')
         print(target_words)
         print(input_ids[:, 1:])
+        print('src')
+        print(input_ids[:, :-1])
+        print('masks')
+        print('padding')
+        print(masks)
+        print('attention')
+        print(transformer.generate_square_subsequent_mask(
+            input_ids[:, :-1]
+        ))
         #print('preds')
         #print(preds)
         #preds.extend(np.argmax(batch_logits, axis=1))
