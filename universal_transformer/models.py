@@ -50,8 +50,8 @@ class TransformerModelBase(nn.Module):
         target_ids = target_ids.permute(1, 0, 2)
 
         att_mask = self.transformer.generate_square_subsequent_mask(
-            target_ids.size(1)
-            #target_ids.size(0)
+            print(target_ids.size(0))
+            target_ids.size(0)
         )
         att_mask = att_mask.to(source_ids.device)
 
